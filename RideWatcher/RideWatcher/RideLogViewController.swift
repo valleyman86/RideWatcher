@@ -10,11 +10,24 @@ import UIKit
 
 class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    @IBOutlet weak var logSwitch: UISwitch!
+    
+    let gpsTracker = GPSTracker(locationDispatcher:LocationDispatcher.shared)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        
+        // Add the navbar image as the title. TODO: Maybe add support for this in the storyboard
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "navbar"))
+        
+        gpsTracker.stopTimeThreshold = 5
+        gpsTracker.startTracker { (error:LocationDispatcher.AuthorizationError?) in
+            if (error != nil) {
+                print(error)
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {

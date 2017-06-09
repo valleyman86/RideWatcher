@@ -17,7 +17,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
-        // Override point for customization after application launch.
+        // Usually one might set a default storyboard and initial view in said storyboard but in my case
+        // I want to support some dependency injection and I need access to the initial view controller.
+        // Also if we had some onboarding we could set that up here now if we wanted too...
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        let initialViewController = storyboard.instantiateInitialViewController()
+        if let rideLogViewController = initialViewController as? RideLogViewController
+            ?? (initialViewController as? UINavigationController)?.viewControllers.first as? RideLogViewController {
+            
+            rideLogViewController.viewModel = RideLogGPSViewModel(gpsTracker: GPSTracker(locationDispatcher:LocationDispatcher.shared))
+        }
+        
+        self.window?.rootViewController = initialViewController
+        self.window?.makeKeyAndVisible()
+        
         return true
     }
 

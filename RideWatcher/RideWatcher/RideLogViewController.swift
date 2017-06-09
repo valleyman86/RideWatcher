@@ -8,26 +8,27 @@
 
 import UIKit
 
+
 class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var logSwitch: UISwitch!
     
+    var viewModel:RideLogViewModel! // I kind of want the app to crash if this doesn't exist.
     let gpsTracker = GPSTracker(locationDispatcher:LocationDispatcher.shared)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        
         // Add the navbar image as the title. TODO: Maybe add support for this in the storyboard
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "navbar"))
-        
-        gpsTracker.stopTimeThreshold = 5
-        gpsTracker.startTracker { (error:LocationDispatcher.AuthorizationError?) in
-            if (error != nil) {
-                print(error)
-            }
-        }
+
+//        gpsTracker.stopTimeThreshold = 5
+//        gpsTracker.startTracker { (error:LocationDispatcher.AuthorizationError?) in
+//            if (error != nil) {
+//                print(error)
+//            }
+//        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -39,13 +40,11 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
     // MARK: - Table view data source
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 3
+        return viewModel.numberOfSections()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 1
+        return viewModel.numberOfRowsInSection(section: section)
     }
     
     
@@ -93,7 +92,7 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
      }
      */
     
-    /*
+    
      // MARK: - Navigation
      
      // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -101,6 +100,6 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
      // Get the new view controller using segue.destinationViewController.
      // Pass the selected object to the new view controller.
      }
-     */
+ 
 }
 

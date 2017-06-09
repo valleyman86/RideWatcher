@@ -13,7 +13,7 @@
         <!--Navigation Controller-->
         <scene sceneID="waT-xN-ICK">
             <objects>
-                <navigationController id="ept-6b-xbb" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="RootNavigationController" id="ept-6b-xbb" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="WUj-qX-Mtc">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>

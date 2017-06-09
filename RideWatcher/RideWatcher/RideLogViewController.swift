@@ -8,13 +8,17 @@
 
 import UIKit
 
-
-class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, RideLogViewModelDelegate {
 
     @IBOutlet weak var logSwitch: UISwitch!
+    @IBOutlet weak var tableView: UITableView!
     
-    var viewModel:RideLogViewModel! // I kind of want the app to crash if this doesn't exist.
-    let gpsTracker = GPSTracker(locationDispatcher:LocationDispatcher.shared)
+    // I kind of want the app to crash if this doesn't exist.
+    var viewModel:RideLogViewModel! {
+        didSet {
+            viewModel.viewDelegate = self
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +33,7 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
 //                print(error)
 //            }
 //        }
+        viewModel.startLogging()
     }
 
     override func didReceiveMemoryWarning() {
@@ -37,6 +42,12 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
 
 
+    // MARK: - RideLogViewModelDelegate
+    
+    func update() {
+        tableView.reloadData()
+    }
+    
     // MARK: - Table view data source
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -47,11 +58,14 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
         return viewModel.numberOfRowsInSection(section: section)
     }
     
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "RideLogCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "RideLogCell", for: indexPath) as! RideLogCell
         
         // Configure the cell...
+        
+        if let cellViewModel = viewModel.viewModelForIndexPath(indexPath) {
+            cell.configureWithViewModel(viewModel: cellViewModel)
+        }
         
         return cell
     }

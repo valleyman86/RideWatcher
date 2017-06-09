@@ -9,6 +9,12 @@
 import UIKit
 import CoreLocation
 
+protocol GPSTrackerDelegate : class {
+    func tripBegan(location:CLLocation) -> Void
+    func tripLocationChanged(location:CLLocation) -> Void
+    func tripEnded(location:CLLocation) -> Void
+}
+
 class GPSTracker: LocationDispatcherDelegate {
 
     /// Initial speed to start logging a trip in m/s (meters per second). Default: 4.4704 m/s (~10 MPH)
@@ -17,12 +23,12 @@ class GPSTracker: LocationDispatcherDelegate {
     /// Time period we need to be standing still to stop logging a trip
     public var stopTimeThreshold = 60.0
     
+    public weak var delegate:GPSTrackerDelegate?
     
     internal var isActive = false
     
     private let locationDispatcher:LocationDispatcher!
     private let geoLocator = CLGeocoder()
-//    private var isTracking = false
     private var tripStarted = false
     private var dateWhenStopped = Date()
     
@@ -51,14 +57,16 @@ class GPSTracker: LocationDispatcherDelegate {
         isActive = false
     }
     
-    private func startTrip() {
+    private func startTrip(location:CLLocation) {
         tripStarted = true
         dateWhenStopped = Date()
+        delegate?.tripBegan(location: location)
         print("🚙 Started Trip")
     }
     
-    private func stopTrip() {
+    private func stopTrip(location:CLLocation) {
         tripStarted = false
+        delegate?.tripEnded(location: location)
         print("🚗 Stopped Trip")
     }
     
@@ -66,7 +74,7 @@ class GPSTracker: LocationDispatcherDelegate {
     
     func locationDispatcher(didUpdateLocation lastLocation: CLLocation) {
         if !tripStarted && lastLocation.speed >= speedThreshold {
-            startTrip()
+            startTrip(location: lastLocation)
         }
         
         if tripStarted {
@@ -75,17 +83,10 @@ class GPSTracker: LocationDispatcherDelegate {
             }
             
             if abs(dateWhenStopped.timeIntervalSinceNow) > stopTimeThreshold {
-                stopTrip()
+                stopTrip(location: lastLocation)
+            } else {
+                delegate?.tripLocationChanged(location: lastLocation)
             }
         }
     }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if isActive && (status == .authorizedAlways || status == .authorizedWhenInUse) {
-            manager.startUpdatingLocation()
-        } else if status != .notDetermined {
-            stopTracker()
-        }
-    }
-    
 }

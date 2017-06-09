@@ -78,7 +78,7 @@
                                 <color key="separatorColor" red="0.84720939399999995" green="0.83945351840000004" blue="0.8267675042" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RideLogCell" id="u9K-tQ-haV">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RideLogCell" id="u9K-tQ-haV" customClass="RideLogCell" customModule="RideWatcher" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="55"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="u9K-tQ-haV" id="yCf-2C-Xqc">
@@ -126,6 +126,10 @@
                                                 <constraint firstItem="HqG-zr-SX9" firstAttribute="leading" secondItem="yCf-2C-Xqc" secondAttribute="leading" id="kEw-du-ibA"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="timeLabel" destination="CUN-ia-5M1" id="euk-Jk-TAk"/>
+                                            <outlet property="tripLabel" destination="2FH-fH-gp8" id="ox0-Qb-Dt2"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <sections/>
@@ -149,6 +153,7 @@
                     <navigationItem key="navigationItem" id="0KP-os-clN"/>
                     <connections>
                         <outlet property="logSwitch" destination="LBd-Ja-JeX" id="kwi-ZV-9fw"/>
+                        <outlet property="tableView" destination="bWJ-FP-y1m" id="Xrm-Hs-UGP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

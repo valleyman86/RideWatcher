@@ -58,6 +58,9 @@
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="LBd-Ja-JeX">
                                         <rect key="frame" x="291" y="20" width="51" height="31"/>
                                         <color key="onTintColor" red="0.0023318883031606674" green="0.69980686902999878" blue="0.67313301563262939" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <connections>
+                                            <action selector="logSwitchValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="dOv-1v-fqO"/>
+                                        </connections>
                                     </switch>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

@@ -26,14 +26,6 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         // Add the navbar image as the title. TODO: Maybe add support for this in the storyboard
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "navbar"))
-
-//        gpsTracker.stopTimeThreshold = 5
-//        gpsTracker.startTracker { (error:LocationDispatcher.AuthorizationError?) in
-//            if (error != nil) {
-//                print(error)
-//            }
-//        }
-        viewModel.startLogging()
     }
 
     override func didReceiveMemoryWarning() {
@@ -42,6 +34,14 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
 
 
+    @IBAction func logSwitchValueChanged(_ sender: UISwitch) {
+        if (sender.isOn) {
+            viewModel.startLogging()
+        } else {
+            viewModel.stopLogging()
+        }
+    }
+    
     // MARK: - RideLogViewModelDelegate
     
     func update() {

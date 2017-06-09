@@ -31,7 +31,7 @@ class GPSTracker: LocationDispatcherDelegate {
     private let geoLocator = CLGeocoder()
     private var tripStarted = false
     private var dateWhenStopped = Date()
-    
+    private var lastLocation:CLLocation?
 
     
     init(locationDispatcher:LocationDispatcher) {        
@@ -55,19 +55,27 @@ class GPSTracker: LocationDispatcherDelegate {
     
     public func stopTracker() {
         isActive = false
+        if let lastLocation = lastLocation {
+            stopTrip(location: lastLocation)
+        }
     }
     
     private func startTrip(location:CLLocation) {
-        tripStarted = true
-        dateWhenStopped = Date()
-        delegate?.tripBegan(location: location)
-        print("🚙 Started Trip")
+        if (!tripStarted) {
+            tripStarted = true
+            dateWhenStopped = Date()
+            delegate?.tripBegan(location: location)
+            print("🚙 Started Trip")
+        }
     }
     
     private func stopTrip(location:CLLocation) {
-        tripStarted = false
-        delegate?.tripEnded(location: location)
-        print("🚗 Stopped Trip")
+        if (tripStarted) {
+            tripStarted = false
+            delegate?.tripEnded(location: location)
+            lastLocation = nil
+            print("🚗 Stopped Trip")
+        }
     }
     
     // MARK: - LocationDispatcherDelegate
@@ -85,6 +93,7 @@ class GPSTracker: LocationDispatcherDelegate {
             if abs(dateWhenStopped.timeIntervalSinceNow) > stopTimeThreshold {
                 stopTrip(location: lastLocation)
             } else {
+                self.lastLocation = lastLocation
                 delegate?.tripLocationChanged(location: lastLocation)
             }
         }

@@ -40,7 +40,7 @@ class RideLogGPSViewModel: RideLogViewModel, GPSTrackerDelegate {
     }
     
     func startLogging() {
-        self.gpsTracker.startTracker { (error:LocationDispatcher.AuthorizationError?) in
+        gpsTracker.startTracker { (error:LocationDispatcher.AuthorizationError?) in
             if let error = error {
                 print(error)
             }
@@ -48,7 +48,7 @@ class RideLogGPSViewModel: RideLogViewModel, GPSTrackerDelegate {
     }
     
     func stopLogging() {
-        
+        gpsTracker.stopTracker()
     }
     
     // MARK: - GPSTrackerDelegate

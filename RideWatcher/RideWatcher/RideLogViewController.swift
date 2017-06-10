@@ -26,8 +26,14 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         // Add the navbar image as the title. TODO: Maybe add support for this in the storyboard
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "navbar"))
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -42,9 +48,20 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    func applicationDidBecomeActive() {
+        // Set the state of the toggle switch if something changed (privacy settings) in the background.
+        logSwitch.isOn = viewModel.isLoggingActive
+    }
+    
     // MARK: - RideLogViewModelDelegate
     
     func update() {
+        // It is possible that the delegate is set before the view is even loaded causing core data updates to crash the app.
+        // One possible way to prevent this is to just delate settings the delegate on the viewModel until after load
+        guard let tableView = tableView else {
+            return
+        }
+        
         tableView.reloadData()
     }
     

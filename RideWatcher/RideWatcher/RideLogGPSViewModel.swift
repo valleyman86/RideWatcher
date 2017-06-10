@@ -8,35 +8,56 @@
 
 import Foundation
 import CoreLocation
+import CoreData
 
-class RideLogGPSViewModel: RideLogViewModel, GPSTrackerDelegate {
+class RideLogGPSViewModel: NSObject, RideLogViewModel, GPSTrackerDelegate, NSFetchedResultsControllerDelegate {
     
     public var viewDelegate: RideLogViewModelDelegate?
-    
-    private var trips = [(start:CLLocation, end:CLLocation?)]()
+    public var isLoggingActive: Bool {
+        get {
+            return gpsTracker != nil ? gpsTracker.isActive : false
+        }
+    }
+
+    private var fetchedResultsController: NSFetchedResultsController<Trip>!
     private let gpsTracker:GPSTracker!
+    private var currentTrip:Trip?
     
     init(gpsTracker:GPSTracker) {
         self.gpsTracker = gpsTracker
+        
+        super.init()
+        
         self.gpsTracker.delegate = self
         self.gpsTracker.stopTimeThreshold = 2
+        
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: Trip.sortedFetchRequest(), managedObjectContext: CoreDataUtils.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            fatalError("Failed to initialize FetchedResultsController: \(error)")
+        }
     }
     
     
     // MARK: - RideLogViewModel
     
+    func numberOfSections() -> Int {
+        return fetchedResultsController.sections?.count ?? 0
+    }
+    
     func numberOfRowsInSection(section: Int) -> Int {
-        return trips.count
+        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }
     
     func viewModelForIndexPath(_ indexPath: IndexPath) -> RideLogCellViewModel? {
-        guard trips.startIndex != trips.endIndex else {
+        guard let trip = self.fetchedResultsController?.object(at: indexPath) else {
             return nil
         }
         
-        // Reverse the array so that latest trips are at the top
-        let index = (trips.endIndex - 1) - indexPath.row
-        return RideLogGPSCellViewModel(startLocation:trips[index].start, endLocation:trips[index].end)
+        return RideLogGPSCellViewModel(trip)
     }
     
     func startLogging() {
@@ -54,24 +75,58 @@ class RideLogGPSViewModel: RideLogViewModel, GPSTrackerDelegate {
     // MARK: - GPSTrackerDelegate
     
     func tripBegan(location: CLLocation) {
-        trips.append((start: location, end: nil))
-        self.viewDelegate?.update()
+        currentTrip = Trip(context: CoreDataUtils.persistentContainer.viewContext) // Link Task & Context
+        currentTrip?.startTime = location.timestamp
+        currentTrip?.travelPath = [location]
+        CoreDataUtils.saveContext()
     }
     
     func tripLocationChanged(location: CLLocation) {
-        // Ignored for future feature
+        guard let currentTrip = currentTrip else {
+            return
+        }
+        
+        currentTrip.travelPath.append(location)
+        CoreDataUtils.saveContext()
     }
     
     func tripEnded(location: CLLocation) {
-        guard var lastTrip = trips.last, lastTrip.end == nil else {
+        guard let currentTrip = currentTrip else {
             debugPrint("Somehow this trip ended before it ever started... Time travel most likely.")
             return
         }
         
-        lastTrip.end = location
-        trips.removeLast()
-        trips.append(lastTrip)
+        currentTrip.travelPath.append(location)
+        currentTrip.completed = true
+        CoreDataUtils.saveContext()
         
         self.viewDelegate?.update()
     }
+    
+    // MARK: - NSFetchedResultsControllerDelegate
+    
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+//        tableView.beginUpdates()
+        viewDelegate?.update()
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+//        switch type {
+//        case .insert:
+//            tableView.insertRows(at: [newIndexPath!], with: .fade)
+//        case .delete:
+//            tableView.deleteRows(at: [indexPath!], with: .fade)
+//        case .update:
+//            tableView.reloadRows(at: [indexPath!], with: .fade)
+//        case .move:
+//            tableView.moveRow(at: indexPath!, to: newIndexPath!)
+//        }
+        viewDelegate?.update()
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+//        tableView.endUpdates()
+        viewDelegate?.update()
+    }
+    
 }

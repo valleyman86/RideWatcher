@@ -17,6 +17,7 @@ protocol RideLogViewModelDelegate : class {
 /// Protocol for loading data from arbitrary objects (i.e. The view is populated by a server rather than location services"
 protocol RideLogViewModel {
     weak var viewDelegate:RideLogViewModelDelegate? { get set }
+    var isLoggingActive:Bool { get }
     func numberOfSections() -> Int
     func numberOfRowsInSection(section: Int) -> Int
     func viewModelForIndexPath(_ indexPath: IndexPath) -> RideLogCellViewModel?

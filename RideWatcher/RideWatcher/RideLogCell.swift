@@ -40,8 +40,8 @@ class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate {
     // MARK: - RideLogCellViewModelDelegate
     
     func update() {
-        if let startLocation = viewModel.startLocation {
-            tripLabel.text = startLocation + " › " + (viewModel.endLocation ?? "")
+        if let startAddress = viewModel.startAddress {
+            tripLabel.text = startAddress + " › " + (viewModel.endAddress ?? "")
         } else {
             // Assuming here that a this cell exist because a trip started... Could just store this in the storyboard as a default value but I like seeing the example in the storyboard
             tripLabel.text = "Trip Started"

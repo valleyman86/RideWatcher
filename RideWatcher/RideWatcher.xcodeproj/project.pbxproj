@@ -21,6 +21,8 @@
 		D4B1F9B51EEA9AE900B6DBAE /* RideLogCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B1F9B41EEA9AE900B6DBAE /* RideLogCellViewModel.swift */; };
 		D4B1F9B81EEAA0BA00B6DBAE /* RideLogGPSViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B1F9AF1EEA248100B6DBAE /* RideLogGPSViewModel.swift */; };
 		D4B1F9BA1EEAA5E700B6DBAE /* RideLogCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B1F9B91EEAA5E700B6DBAE /* RideLogCellProtocol.swift */; };
+		D4B1F9BC1EEB4EF600B6DBAE /* CoreDataUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B1F9BB1EEB4EF600B6DBAE /* CoreDataUtils.swift */; };
+		D4B1F9BE1EEB52E600B6DBAE /* Trip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B1F9BD1EEB52E600B6DBAE /* Trip.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +54,8 @@
 		D4B1F9B21EEA98E800B6DBAE /* RideLogCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RideLogCell.swift; sourceTree = "<group>"; };
 		D4B1F9B41EEA9AE900B6DBAE /* RideLogCellViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RideLogCellViewModel.swift; sourceTree = "<group>"; };
 		D4B1F9B91EEAA5E700B6DBAE /* RideLogCellProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RideLogCellProtocol.swift; sourceTree = "<group>"; };
+		D4B1F9BB1EEB4EF600B6DBAE /* CoreDataUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataUtils.swift; sourceTree = "<group>"; };
+		D4B1F9BD1EEB52E600B6DBAE /* Trip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Trip.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +106,7 @@
 				D4B1F9B91EEAA5E700B6DBAE /* RideLogCellProtocol.swift */,
 				D4B1F9B41EEA9AE900B6DBAE /* RideLogCellViewModel.swift */,
 				D4B1F9B21EEA98E800B6DBAE /* RideLogCell.swift */,
+				D4B1F9C01EEB52F500B6DBAE /* Models */,
 				D48EA32A1EE5FDAF00309915 /* Main.storyboard */,
 				D48EA3301EE5FDAF00309915 /* Assets.xcassets */,
 				D48EA3321EE5FDAF00309915 /* LaunchScreen.storyboard */,
@@ -118,6 +123,15 @@
 				D48EA3401EE5FDAF00309915 /* Info.plist */,
 			);
 			path = RideWatcherTests;
+			sourceTree = "<group>";
+		};
+		D4B1F9C01EEB52F500B6DBAE /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D4B1F9BB1EEB4EF600B6DBAE /* CoreDataUtils.swift */,
+				D4B1F9BD1EEB52E600B6DBAE /* Trip.swift */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -172,6 +186,11 @@
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = WEXJ9C8C7V;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					D48EA3391EE5FDAF00309915 = {
 						CreatedOnToolsVersion = 8.3.2;
@@ -224,9 +243,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4B1F9BE1EEB52E600B6DBAE /* Trip.swift in Sources */,
 				D4B1F9BA1EEAA5E700B6DBAE /* RideLogCellProtocol.swift in Sources */,
 				D48EA3291EE5FDAF00309915 /* RideLogViewController.swift in Sources */,
 				D4B1F9B31EEA98E800B6DBAE /* RideLogCell.swift in Sources */,
+				D4B1F9BC1EEB4EF600B6DBAE /* CoreDataUtils.swift in Sources */,
 				D4B1F9B51EEA9AE900B6DBAE /* RideLogCellViewModel.swift in Sources */,
 				D4B1F9B81EEAA0BA00B6DBAE /* RideLogGPSViewModel.swift in Sources */,
 				D48EA32F1EE5FDAF00309915 /* RideWatcher.xcdatamodeld in Sources */,

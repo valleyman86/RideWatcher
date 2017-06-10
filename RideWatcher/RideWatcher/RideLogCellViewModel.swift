@@ -11,27 +11,44 @@ import CoreLocation
 
 class RideLogGPSCellViewModel: RideLogCellViewModel {
     public var viewDelegate: RideLogCellViewModelDelegate?
-    var startLocation:String?
+    var startAddress:String?
     var startTime: String?
-    var endLocation:String?
+    var endAddress:String?
     var endTime: String?
     
     let dateFormatter = DateFormatter()
     
-    init(startLocation:CLLocation, endLocation:CLLocation?) {
+    init(_ trip:Trip) {
         
-//        dateFormatter.dateStyle = .none
+        guard let startLocation = trip.travelPath.first else {
+            return
+        }
+        
         dateFormatter.timeStyle = .short
         
         startTime = dateFormatter.string(from: startLocation.timestamp)
-        geocodeLocation(location: startLocation) {
-            self.startLocation = $0
+        
+        if let startAddress = trip.startAddress {
+            self.startAddress = startAddress
+        } else {
+            geocodeLocation(location: startLocation) {
+                self.startAddress = $0
+                trip.startAddress = self.startAddress
+                CoreDataUtils.saveContext()
+            }
         }
         
-        if let endLocation = endLocation {
+        if let endLocation = trip.travelPath.last, trip.completed {
             endTime = dateFormatter.string(from: endLocation.timestamp) + " (" + getTripLength(startTime: startLocation.timestamp, endTime: endLocation.timestamp) + ")"
-            geocodeLocation(location: endLocation) {
-                self.endLocation = $0
+            
+            if let endAddress = trip.endAddress {
+                self.endAddress = endAddress
+            } else {
+                geocodeLocation(location: endLocation) {
+                    self.endAddress = $0
+                    trip.endAddress = self.endAddress
+                    CoreDataUtils.saveContext()
+                }
             }
         }
     }

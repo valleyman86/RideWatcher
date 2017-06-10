@@ -80,6 +80,12 @@ class GPSTracker: LocationDispatcherDelegate {
     
     // MARK: - LocationDispatcherDelegate
     
+    func locationManager(didChangeAuthorization status: CLAuthorizationStatus) {
+        if (status != .authorizedAlways && status != .authorizedWhenInUse) {
+            stopTracker()
+        }
+    }
+    
     func locationDispatcher(didUpdateLocation lastLocation: CLLocation) {
         if !tripStarted && lastLocation.speed >= speedThreshold {
             startTrip(location: lastLocation)

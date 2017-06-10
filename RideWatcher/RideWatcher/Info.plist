@@ -24,6 +24,10 @@
 	<string>Tracking user trip information in both foreground and background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Tracking user trip information in both foreground and background.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

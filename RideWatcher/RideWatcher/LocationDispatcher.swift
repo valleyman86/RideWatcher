@@ -12,6 +12,8 @@ import CoreLocation
 protocol LocationDispatcherDelegate : class {
     var isActive: Bool { get set }
     func locationDispatcher(didUpdateLocation lastLocation: CLLocation)
+    func locationManager(didChangeAuthorization status: CLAuthorizationStatus)
+    
 }
 
 /// LocationDispatcher is manages dispatching location events to other objects.
@@ -73,6 +75,7 @@ class LocationDispatcher: NSObject, CLLocationManagerDelegate {
     private override init() {
         super.init()
         
+        locationManager.allowsBackgroundLocationUpdates = true
         locationManager.delegate = self
     }
     
@@ -145,6 +148,10 @@ class LocationDispatcher: NSObject, CLLocationManagerDelegate {
                 callback(.notAuthorized(description: "Unable to start the location services"))
                 self.callback = nil // We dont need the callback hanging around after we use it.
             }
+        }
+        
+        for delegate in locationDelegates {
+            delegate.value?.locationManager(didChangeAuthorization: status)
         }
     }
     

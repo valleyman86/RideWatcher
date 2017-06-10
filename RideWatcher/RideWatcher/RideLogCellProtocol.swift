@@ -15,8 +15,8 @@ protocol RideLogCellViewModelDelegate : class {
 
 protocol RideLogCellViewModel {
     weak var viewDelegate:RideLogCellViewModelDelegate? { get set }
-    var startLocation:String? { get }
+    var startAddress:String? { get }
     var startTime:String? { get }
-    var endLocation:String? { get }
+    var endAddress:String? { get }
     var endTime:String? { get }
 }

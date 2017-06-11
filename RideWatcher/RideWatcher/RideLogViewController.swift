@@ -13,10 +13,10 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet weak var logSwitch: UISwitch!
     @IBOutlet weak var tableView: UITableView!
     
-    // I kind of want the app to crash if this doesn't exist.
     var viewModel:RideLogViewModel! {
         didSet {
-            viewModel.viewDelegate = self
+            // We should only set the viewModels delegate once this view is ready to go.
+            viewModel.viewDelegate = isViewLoaded ? self : nil
         }
     }
     
@@ -28,6 +28,8 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "navbar"))
         
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        
+        viewModel.viewDelegate = self
     }
 
     deinit {
@@ -55,14 +57,41 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     // MARK: - RideLogViewModelDelegate
     
-    func update() {
-        // It is possible that the delegate is set before the view is even loaded causing core data updates to crash the app.
-        // One possible way to prevent this is to just delate settings the delegate on the viewModel until after load
-        guard let tableView = tableView else {
-            return
+    func viewModelWillChangeContent(_ viewModel: RideLogViewModel) {
+        debugPrint("UITableView:beginUpdates");
+        tableView.beginUpdates()
+    }
+    
+    func viewModel(_ viewModel: RideLogViewModel, didChange anObject: Any, at indexPath: IndexPath?, for type: RideLogChangeType, newIndexPath: IndexPath?) {
+        switch type {
+        case .insert:
+            if let newIndexPath = newIndexPath {
+                debugPrint("UITableView:insertRows %@", newIndexPath)
+                tableView.insertRows(at: [newIndexPath], with: .fade)
+            }
+        case .update:
+            if let indexPath = indexPath {
+                debugPrint("UITableView:reloadRows %@", indexPath)
+                tableView.reloadRows(at: [indexPath], with: .none)
+            }
+        case .delete:
+            if let indexPath = indexPath {
+                debugPrint("UITableView:deleteRows %@", indexPath)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            }
+        case .move:
+            if let indexPath = indexPath, let newIndexPath = newIndexPath {
+                debugPrint("UITableView:deleteRows %@", indexPath)
+                debugPrint("UITableView:moveRows %@", newIndexPath)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+                tableView.insertRows(at: [newIndexPath], with: .fade)
+            }
         }
-        
-        tableView.reloadData()
+    }
+    
+    func viewModelDidChangeContent(_ viewModel: RideLogViewModel) {
+        debugPrint("UITableView:endUpdates");
+        tableView.endUpdates()
     }
     
     // MARK: - Table view data source
@@ -125,12 +154,14 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     
      // MARK: - Navigation
-     
+    
+    /*
      // In a storyboard-based application, you will often want to do a little preparation before navigation
      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
      // Get the new view controller using segue.destinationViewController.
      // Pass the selected object to the new view controller.
      }
+     */
  
 }
 

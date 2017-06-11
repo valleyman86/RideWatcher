@@ -99,34 +99,36 @@ class RideLogGPSViewModel: NSObject, RideLogViewModel, GPSTrackerDelegate, NSFet
         currentTrip.travelPath.append(location)
         currentTrip.completed = true
         CoreDataUtils.saveContext()
-        
-        self.viewDelegate?.update()
     }
     
     // MARK: - NSFetchedResultsControllerDelegate
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-//        tableView.beginUpdates()
-        viewDelegate?.update()
+        viewDelegate?.viewModelWillChangeContent(self)
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-//        switch type {
-//        case .insert:
-//            tableView.insertRows(at: [newIndexPath!], with: .fade)
-//        case .delete:
-//            tableView.deleteRows(at: [indexPath!], with: .fade)
-//        case .update:
-//            tableView.reloadRows(at: [indexPath!], with: .fade)
-//        case .move:
-//            tableView.moveRow(at: indexPath!, to: newIndexPath!)
-//        }
-        viewDelegate?.update()
+        
+        // I preferred to be a bit more strict here just for future safety. If I converted one enum to another directly and some other option came
+        // back that I did not expect we could crash.
+        var changeType:RideLogChangeType
+        
+        switch type {
+            case .insert:
+                changeType = .insert
+            case .delete:
+                changeType = .delete
+            case .update:
+                changeType = .update
+            case .move:
+                changeType = .move
+        }
+    
+        viewDelegate?.viewModel(self, didChange: anObject, at: indexPath, for: changeType, newIndexPath: newIndexPath)
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-//        tableView.endUpdates()
-        viewDelegate?.update()
+        viewDelegate?.viewModelDidChangeContent(self)
     }
     
 }

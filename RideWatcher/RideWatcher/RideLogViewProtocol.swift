@@ -8,10 +8,18 @@
 
 import Foundation
 
+enum RideLogChangeType : UInt {
+    case insert
+    case delete
+    case move
+    case update
+}
 
 /// Delegate protocol used for communicating with the ViewControllers that may use the viewModel
-protocol RideLogViewModelDelegate : class {
-    func update()
+protocol RideLogViewModelDelegate : class {  
+    func viewModelWillChangeContent(_ viewModel: RideLogViewModel)
+    func viewModel(_ viewModel: RideLogViewModel, didChange anObject: Any, at indexPath: IndexPath?, for type: RideLogChangeType, newIndexPath: IndexPath?)
+    func viewModelDidChangeContent(_ viewModel: RideLogViewModel)
 }
 
 /// Protocol for loading data from arbitrary objects (i.e. The view is populated by a server rather than location services"

@@ -23,6 +23,7 @@
 		D4B1F9BA1EEAA5E700B6DBAE /* RideLogCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B1F9B91EEAA5E700B6DBAE /* RideLogCellProtocol.swift */; };
 		D4B1F9BC1EEB4EF600B6DBAE /* CoreDataUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B1F9BB1EEB4EF600B6DBAE /* CoreDataUtils.swift */; };
 		D4B1F9BE1EEB52E600B6DBAE /* Trip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B1F9BD1EEB52E600B6DBAE /* Trip.swift */; };
+		D4B1F9C71EEDF98B00B6DBAE /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B1F9C61EEDF98B00B6DBAE /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		D4B1F9B91EEAA5E700B6DBAE /* RideLogCellProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RideLogCellProtocol.swift; sourceTree = "<group>"; };
 		D4B1F9BB1EEB4EF600B6DBAE /* CoreDataUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataUtils.swift; sourceTree = "<group>"; };
 		D4B1F9BD1EEB52E600B6DBAE /* Trip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Trip.swift; sourceTree = "<group>"; };
+		D4B1F9C61EEDF98B00B6DBAE /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4B1F9C71EEDF98B00B6DBAE /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +85,7 @@
 				D48EA3251EE5FDAF00309915 /* RideWatcher */,
 				D48EA33D1EE5FDAF00309915 /* RideWatcherTests */,
 				D48EA3241EE5FDAF00309915 /* Products */,
+				D4B1F9C51EEDF98A00B6DBAE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -132,6 +136,14 @@
 				D4B1F9BD1EEB52E600B6DBAE /* Trip.swift */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		D4B1F9C51EEDF98A00B6DBAE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D4B1F9C61EEDF98B00B6DBAE /* MapKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

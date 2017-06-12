@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreLocation
+import MapKit
 
 protocol RideLogCellViewModelDelegate : class {
     func update()
@@ -19,4 +20,5 @@ protocol RideLogCellViewModel {
     var startTime:String? { get }
     var endAddress:String? { get }
     var endTime:String? { get }
+    var tripPath: MKPolyline? { get }
 }

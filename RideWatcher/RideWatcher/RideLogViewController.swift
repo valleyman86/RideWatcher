@@ -10,8 +10,10 @@ import UIKit
 
 class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, RideLogViewModelDelegate {
 
-    @IBOutlet weak var logSwitch: UISwitch!
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet var logSwitch: UISwitch!
+    @IBOutlet var tableView: UITableView!
+    
+    var expandedIndexPath:IndexPath?
     
     var viewModel:RideLogViewModel! {
         didSet {
@@ -30,6 +32,9 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         
         viewModel.viewDelegate = self
+        
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 140
     }
 
     deinit {
@@ -66,21 +71,37 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
         switch type {
         case .insert:
             if let newIndexPath = newIndexPath {
+                if let expandedIndexPath = expandedIndexPath, expandedIndexPath >= newIndexPath {
+                    self.expandedIndexPath = IndexPath(row: expandedIndexPath.row + 1, section: expandedIndexPath.section)
+                }
+                
                 debugPrint("UITableView:insertRows %@", newIndexPath)
                 tableView.insertRows(at: [newIndexPath], with: .fade)
             }
         case .update:
             if let indexPath = indexPath {
                 debugPrint("UITableView:reloadRows %@", indexPath)
-                tableView.reloadRows(at: [indexPath], with: .none)
+                if let cell = tableView.cellForRow(at: indexPath) as? RideLogCell, let cellViewModel = viewModel.viewModelForIndexPath(indexPath) {
+                    cell.configureWithViewModel(viewModel: cellViewModel)
+                }
             }
         case .delete:
             if let indexPath = indexPath {
+                if let expandedIndexPath = expandedIndexPath, expandedIndexPath > indexPath {
+                    if (expandedIndexPath > indexPath) {
+                        self.expandedIndexPath = IndexPath(row: expandedIndexPath.row - 1, section: expandedIndexPath.section)
+                    } else if (expandedIndexPath == indexPath) {
+                        self.expandedIndexPath = nil
+                    }
+                }
+                
                 debugPrint("UITableView:deleteRows %@", indexPath)
                 tableView.deleteRows(at: [indexPath], with: .fade)
             }
         case .move:
             if let indexPath = indexPath, let newIndexPath = newIndexPath {
+                self.expandedIndexPath = nil
+                
                 debugPrint("UITableView:deleteRows %@", indexPath)
                 debugPrint("UITableView:moveRows %@", newIndexPath)
                 tableView.deleteRows(at: [indexPath], with: .fade)
@@ -105,52 +126,38 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "RideLogCell", for: indexPath) as! RideLogCell
-        
-        // Configure the cell...
-        
-        if let cellViewModel = viewModel.viewModelForIndexPath(indexPath) {
-            cell.configureWithViewModel(viewModel: cellViewModel)
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "RideLogCell", for: indexPath) as? RideLogCell {
+            
+            // Configure the cell...
+            
+            if let cellViewModel = viewModel.viewModelForIndexPath(indexPath) {
+                cell.configureWithViewModel(viewModel: cellViewModel)
+                if let expandedIndexPath = expandedIndexPath, expandedIndexPath == indexPath {
+                    cell.expand()
+                }
+            }
+            
+            return cell
         }
         
-        return cell
+        fatalError("RideLogCell can't be found.")
     }
     
-    
-    /*
-     // Override to support conditional editing of the table view.
-     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the specified item to be editable.
-     return true
-     }
-     */
-    
-    /*
-     // Override to support editing the table view.
-     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-     if editingStyle == .delete {
-     // Delete the row from the data source
-     tableView.deleteRows(at: [indexPath], with: .fade)
-     } else if editingStyle == .insert {
-     // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-     }
-     }
-     */
-    
-    /*
-     // Override to support rearranging the table view.
-     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-     
-     }
-     */
-    
-    /*
-     // Override to support conditional rearranging of the table view.
-     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the item to be re-orderable.
-     return true
-     }
-     */
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // We have to do this here and reload the cell because we are expecting the height to change.
+        if let expandedIndexPath = expandedIndexPath, expandedIndexPath == indexPath {
+            self.expandedIndexPath = nil // Collapse
+            tableView.reloadRows(at: [expandedIndexPath], with: .fade)
+        } else {
+            if let expandedIndexPath = expandedIndexPath {
+                self.expandedIndexPath = nil // Collapse
+                tableView.reloadRows(at: [expandedIndexPath], with: .fade)
+            }
+            
+            expandedIndexPath = indexPath
+            tableView.reloadRows(at: [indexPath], with: .fade)
+        }
+    }
     
     
      // MARK: - Navigation

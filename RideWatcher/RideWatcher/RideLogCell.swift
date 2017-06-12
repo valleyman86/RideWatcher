@@ -7,11 +7,16 @@
 //
 
 import UIKit
+import MapKit
 
-class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate {
+class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate, MKMapViewDelegate {
     
-    @IBOutlet weak var tripLabel: UILabel!
-    @IBOutlet weak var timeLabel: UILabel!
+    @IBOutlet var tripLabel: UILabel!
+    @IBOutlet var timeLabel: UILabel!
+    @IBOutlet var mapViewContainer: UIView!
+    @IBOutlet var mapViewBottomViewContraint: NSLayoutConstraint!
+    
+    var mapView:MKMapView? = nil
     
 //    var viewModel:RideLogCellViewModel!
     var viewModel:RideLogCellViewModel! {
@@ -23,6 +28,14 @@ class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        mapViewBottomViewContraint.isActive = false
+    }
+    
+    override func prepareForReuse() {
+        
+        // Default the cell to collapse state.
+        collapse()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -37,6 +50,32 @@ class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate {
         update()
     }
     
+    public func expand() {
+        // We create the map view on expand so that we dont have a bunch of hidden mapviews taking up memory.
+        mapView = MKMapView()
+        if let mapView = mapView {
+            mapView.delegate = self
+            mapView.isZoomEnabled = false;
+            mapView.isScrollEnabled = false;
+            mapView.isUserInteractionEnabled = false;
+            mapView.translatesAutoresizingMaskIntoConstraints = false
+            mapViewContainer.addSubview(mapView)
+            mapView.leadingAnchor.constraint(equalTo: mapViewContainer.leadingAnchor).isActive = true
+            mapView.trailingAnchor.constraint(equalTo: mapViewContainer.trailingAnchor).isActive = true
+            mapView.topAnchor.constraint(equalTo: mapViewContainer.topAnchor).isActive = true
+            mapView.bottomAnchor.constraint(equalTo: mapViewContainer.bottomAnchor).isActive = true
+        }
+        
+        mapViewBottomViewContraint.isActive = true
+        
+        update()
+    }
+    
+    public func collapse() {
+        mapViewContainer.subviews.first?.removeFromSuperview()
+        mapViewBottomViewContraint.isActive = false
+    }
+    
     // MARK: - RideLogCellViewModelDelegate
     
     func update() {
@@ -49,6 +88,20 @@ class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate {
         
         if let startTime = viewModel.startTime {
             timeLabel.text = startTime + " - " + (viewModel.endTime ?? "")
-        }        
+        }
+        
+        if let mapView = mapView, let tripPath = viewModel.tripPath {
+            mapView.removeOverlays(mapView.overlays)
+            mapView.add(tripPath)
+            mapView.setVisibleMapRect(tripPath.boundingMapRect, edgePadding: UIEdgeInsets(top: 50, left: 50, bottom: 50, right: 50), animated: false)
+        }
+    }
+    
+    // MARK: - MKMapViewDelegate
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        let polylineRenderer = MKPolylineRenderer(overlay: overlay)
+        polylineRenderer.strokeColor = UIColor.blue
+        polylineRenderer.lineWidth = 5
+        return polylineRenderer
     }
 }

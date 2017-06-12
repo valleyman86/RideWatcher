@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreLocation
+import MapKit
 
 class RideLogGPSCellViewModel: RideLogCellViewModel {
     public var viewDelegate: RideLogCellViewModelDelegate?
@@ -15,6 +16,7 @@ class RideLogGPSCellViewModel: RideLogCellViewModel {
     var startTime: String?
     var endAddress:String?
     var endTime: String?
+    var tripPath: MKPolyline?
     
     let dateFormatter = DateFormatter()
     
@@ -51,6 +53,9 @@ class RideLogGPSCellViewModel: RideLogCellViewModel {
                 }
             }
         }
+        
+        var locations = trip.travelPath.map { $0.coordinate }
+        tripPath = MKPolyline(coordinates: &locations, count: locations.count)
     }
     
 

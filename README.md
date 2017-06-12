@@ -1,6 +1,6 @@
 # RideWatcher
 
-RideWatcher is an app to track a users location if they are traveling more than 10 MPH. 
+RideWatcher is an app to track a users location if they are traveling more than 10 MPH. It uses core data for its data store.
 
 I added an additional feature to show the users the map of their trip. You can see it by clicking on a cell and it will expand.
 

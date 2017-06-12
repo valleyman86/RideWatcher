@@ -60,10 +60,12 @@ class RideLogGPSViewModel: NSObject, RideLogViewModel, GPSTrackerDelegate, NSFet
         return RideLogGPSCellViewModel(trip)
     }
     
-    func startLogging() {
+    func startLogging(_ callback: @escaping (RideLogLogError?) -> Void) {
         gpsTracker.startTracker { (error:LocationDispatcher.AuthorizationError?) in
-            if let error = error {
-                print(error)
+            if let error = error, case .notAuthorized(let description) = error {
+                callback(RideLogLogError.general(description: description))
+            } else {
+                callback(nil)
             }
         }
     }

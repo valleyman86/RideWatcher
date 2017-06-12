@@ -13,7 +13,9 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet var logSwitch: UISwitch!
     @IBOutlet var tableView: UITableView!
     
-    var expandedIndexPath:IndexPath?
+    private var expandedIndexPath:IndexPath?
+    private var settingButtonClicked = false
+    private var authorizingLogger = false
     
     var viewModel:RideLogViewModel! {
         didSet {
@@ -49,7 +51,33 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     @IBAction func logSwitchValueChanged(_ sender: UISwitch) {
         if (sender.isOn) {
-            viewModel.startLogging()
+            authorizingLogger = true
+            viewModel.startLogging { (error:RideLogLogError?) in
+                self.authorizingLogger = false
+                if (error != nil) {
+                    let alertController = UIAlertController(
+                        title: "Background Location Access Disabled",
+                        message: "In order to be notified about adorable kittens near you, please open this app's settings and set location access to 'Always'.",
+                        preferredStyle: .alert)
+                    
+                    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action:UIAlertAction) in
+                        self.logSwitch.isOn = false
+                    })
+                    
+                    alertController.addAction(cancelAction)
+                    
+                    let openAction = UIAlertAction(title: "Open Settings", style: .default) { (action) in
+                        if let url = URL(string:UIApplicationOpenSettingsURLString) {
+                            UIApplication.shared.open(url) { (test:Bool) in
+                                self.settingButtonClicked = true
+                            }
+                        }
+                    }
+                    alertController.addAction(openAction)
+                    
+                    self.present(alertController, animated: true, completion: nil)
+                }
+            }
         } else {
             viewModel.stopLogging()
         }
@@ -57,7 +85,15 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func applicationDidBecomeActive() {
         // Set the state of the toggle switch if something changed (privacy settings) in the background.
-        logSwitch.isOn = viewModel.isLoggingActive
+        
+        if (settingButtonClicked) {
+            viewModel.startLogging { (error:RideLogLogError?) in
+                self.logSwitch.isOn = self.viewModel.isLoggingActive
+                self.settingButtonClicked = false
+            }
+        } else if (!authorizingLogger) {
+            logSwitch.isOn = viewModel.isLoggingActive
+        }
     }
     
     // MARK: - RideLogViewModelDelegate

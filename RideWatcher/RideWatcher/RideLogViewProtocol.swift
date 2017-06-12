@@ -15,6 +15,11 @@ enum RideLogChangeType : UInt {
     case update
 }
 
+
+enum RideLogLogError {
+    case general(description: String)
+}
+
 /// Delegate protocol used for communicating with the ViewControllers that may use the viewModel
 protocol RideLogViewModelDelegate : class {  
     func viewModelWillChangeContent(_ viewModel: RideLogViewModel)
@@ -29,7 +34,7 @@ protocol RideLogViewModel {
     func numberOfSections() -> Int
     func numberOfRowsInSection(section: Int) -> Int
     func viewModelForIndexPath(_ indexPath: IndexPath) -> RideLogCellViewModel?
-    func startLogging()
+    func startLogging(_ callback: @escaping (RideLogLogError?) -> Void)
     func stopLogging()
 }
 

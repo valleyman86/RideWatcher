@@ -31,10 +31,12 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
         // Add the navbar image as the title. TODO: Maybe add support for this in the storyboard
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "navbar"))
         
+        // Observe for when app comes from background
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         
         viewModel.viewDelegate = self
         
+        // Rows should expand when clicked
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 140
     }
@@ -55,6 +57,8 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
             viewModel.startLogging { (error:RideLogLogError?) in
                 self.authorizingLogger = false
                 if (error != nil) {
+                    // If there is an error starting due to authorization issues we should let the user know
+                    // these should be enabled.
                     let alertController = UIAlertController(
                         title: "Background Location Access Disabled",
                         message: "In order to be notified about adorable kittens near you, please open this app's settings and set location access to 'Always'.",
@@ -92,6 +96,7 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.settingButtonClicked = false
             }
         } else if (!authorizingLogger) {
+            // Lets set the switch if the state of logging as changed since we were away.
             logSwitch.isOn = viewModel.isLoggingActive
         }
     }
@@ -180,7 +185,7 @@ class RideLogViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // We have to do this here and reload the cell because we are expecting the height to change.
+        // We have to do set the expanded indexPath here and reload the cell because we are expecting the height to change.
         if let expandedIndexPath = expandedIndexPath, expandedIndexPath == indexPath {
             self.expandedIndexPath = nil // Collapse
             tableView.reloadRows(at: [expandedIndexPath], with: .fade)

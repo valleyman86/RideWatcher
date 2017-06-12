@@ -27,6 +27,7 @@ class GPSTracker: LocationDispatcherDelegate {
     
     internal var isActive = false
     
+    /// the dispatcher is added via an injection model
     private let locationDispatcher:LocationDispatcher!
     private let geoLocator = CLGeocoder()
     private var tripStarted = false
@@ -40,9 +41,10 @@ class GPSTracker: LocationDispatcherDelegate {
     }
     
     
-    /// Starts the tracker
+    
+    /// <#Description#>
     ///
-    /// - Throws: throws if unable
+    /// - Parameter callback: callback for being notified when the logger has started with the error as a parameter.
     public func startTracker(callback: @escaping (LocationDispatcher.AuthorizationError?) -> Void) {
         locationDispatcher.startDispatcher(mode: .authorizedAlways) { [weak self] (error:LocationDispatcher.AuthorizationError?)  in
             if (error == nil) {
@@ -53,6 +55,8 @@ class GPSTracker: LocationDispatcherDelegate {
         }
     }
     
+    
+    /// Stops the tracker
     public func stopTracker() {
         isActive = false
         if let lastLocation = lastLocation {
@@ -60,6 +64,9 @@ class GPSTracker: LocationDispatcherDelegate {
         }
     }
     
+    /// Starts a trip
+    ///
+    /// - Parameter location: location to begin trip
     private func startTrip(location:CLLocation) {
         if (!tripStarted) {
             tripStarted = true
@@ -69,6 +76,10 @@ class GPSTracker: LocationDispatcherDelegate {
         }
     }
     
+    
+    /// Stops a trip
+    ///
+    /// - Parameter location: location to end trip on
     private func stopTrip(location:CLLocation) {
         if (tripStarted) {
             tripStarted = false
@@ -87,10 +98,12 @@ class GPSTracker: LocationDispatcherDelegate {
     }
     
     func locationDispatcher(didUpdateLocation lastLocation: CLLocation) {
+        // Trips are started if we pass the speed threshhold
         if !tripStarted && lastLocation.speed >= speedThreshold {
             startTrip(location: lastLocation)
         }
         
+        // Trips are stopped if we go below the speed threshold for more than a specific time threshold.
         if tripStarted {
             if lastLocation.speed >= speedThreshold {
                 dateWhenStopped = Date()

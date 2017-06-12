@@ -59,19 +59,32 @@ class RideLogGPSCellViewModel: RideLogCellViewModel {
     }
     
 
+    /// Gets the user friendly string for the time of a trip
+    ///
+    /// - Parameters:
+    ///   - startTime: start date
+    ///   - endTime: end date
+    /// - Returns: user friendly string for length of trip
     func getTripLength(startTime:Date, endTime:Date) -> String {
         let timeDiffComponents = Calendar.current.dateComponents([.minute, .second], from: startTime, to: endTime)
         
         var length = ""
         if let minuteComponent = timeDiffComponents.minute, minuteComponent > 0 {
-            length = String(minuteComponent) + "min"
-        } else if let secondsComponent = timeDiffComponents.second {
-            length = String(secondsComponent) + "sec"
+            length = String(minuteComponent) + " min, "
+        }
+        
+        if let secondsComponent = timeDiffComponents.second {
+            length = length + String(secondsComponent) + " sec"
         }
         
         return length
     }
     
+    /// Helper method for geocoding the locations
+    ///
+    /// - Parameters:
+    ///   - location: location to geocode
+    ///   - getPlacemarkString: callback for when a location has been geocoded.
     func geocodeLocation(location:CLLocation, getPlacemarkString: @escaping (String) -> Void) {
         CLGeocoder().reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
             if let error = error {

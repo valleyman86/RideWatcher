@@ -23,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
+        // Initialize the first view controller with a view model
         let initialViewController = storyboard.instantiateInitialViewController()
         if let rideLogViewController = initialViewController as? RideLogViewController
             ?? (initialViewController as? UINavigationController)?.viewControllers.first as? RideLogViewController {
@@ -34,6 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window?.makeKeyAndVisible()
         
         
+        // If a trip has been started and not completed but the app has been force quit/crashed then complete it.
         do {
             if let trips = try CoreDataUtils.persistentContainer.viewContext.fetch(Trip.fetchRequest()) as? [Trip] {
                 for trip in trips {

@@ -21,7 +21,7 @@ class RideLogGPSViewModel: NSObject, RideLogViewModel, GPSTrackerDelegate, NSFet
 
     private var fetchedResultsController: NSFetchedResultsController<Trip>!
     private let gpsTracker:GPSTracker!
-    private var currentTrip:Trip?
+    private var currentTrip:Trip? // Used to keep track of the trip after it has been started.
     
     init(gpsTracker:GPSTracker) {
         self.gpsTracker = gpsTracker
@@ -29,7 +29,7 @@ class RideLogGPSViewModel: NSObject, RideLogViewModel, GPSTrackerDelegate, NSFet
         super.init()
         
         self.gpsTracker.delegate = self
-        self.gpsTracker.stopTimeThreshold = 2
+        self.gpsTracker.stopTimeThreshold = 60
         
         fetchedResultsController = NSFetchedResultsController(fetchRequest: Trip.sortedFetchRequest(), managedObjectContext: CoreDataUtils.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
         fetchedResultsController.delegate = self

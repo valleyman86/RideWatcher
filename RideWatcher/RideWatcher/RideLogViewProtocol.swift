@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Used to notify the RideLogViewController on how to update the tableView
 enum RideLogChangeType : UInt {
     case insert
     case delete
@@ -16,12 +17,14 @@ enum RideLogChangeType : UInt {
 }
 
 
-enum RideLogLogError {
+
+/// General error used for getting location services status
+enum RideLogLogError: Error {
     case general(description: String)
 }
 
 /// Delegate protocol used for communicating with the ViewControllers that may use the viewModel
-protocol RideLogViewModelDelegate : class {  
+protocol RideLogViewModelDelegate : class {
     func viewModelWillChangeContent(_ viewModel: RideLogViewModel)
     func viewModel(_ viewModel: RideLogViewModel, didChange anObject: Any, at indexPath: IndexPath?, for type: RideLogChangeType, newIndexPath: IndexPath?)
     func viewModelDidChangeContent(_ viewModel: RideLogViewModel)

@@ -10,8 +10,17 @@ import Foundation
 import CoreLocation
 
 protocol LocationDispatcherDelegate : class {
+    /// isActive determines if the location observer is ready for updates
     var isActive: Bool { get set }
+    
+    /// delegate method for notifying the observer of a location update
+    ///
+    /// - Parameter lastLocation: the last location the LocationDispatcher found
     func locationDispatcher(didUpdateLocation lastLocation: CLLocation)
+    
+    /// delegate method for notifying the observer than a change in authorization occured.
+    ///
+    /// - Parameter status: status of the authorization
     func locationManager(didChangeAuthorization status: CLAuthorizationStatus)
     
 }

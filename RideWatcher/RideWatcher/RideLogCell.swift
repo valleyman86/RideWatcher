@@ -14,11 +14,10 @@ class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate, MKMapViewDeleg
     @IBOutlet var tripLabel: UILabel!
     @IBOutlet var timeLabel: UILabel!
     @IBOutlet var mapViewContainer: UIView!
-    @IBOutlet var mapViewBottomViewContraint: NSLayoutConstraint!
+    @IBOutlet var mapViewBottomViewContraint: NSLayoutConstraint! // contraint used for expanding the cell
     
     var mapView:MKMapView? = nil
     
-//    var viewModel:RideLogCellViewModel!
     var viewModel:RideLogCellViewModel! {
         didSet {
             viewModel.viewDelegate = self
@@ -50,6 +49,7 @@ class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate, MKMapViewDeleg
         update()
     }
     
+    /// Expand the cell and create a new mapview
     public func expand() {
         // We create the map view on expand so that we dont have a bunch of hidden mapviews taking up memory.
         mapView = MKMapView()
@@ -71,6 +71,7 @@ class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate, MKMapViewDeleg
         update()
     }
     
+    /// Collapse the cell and remove the map view.
     public func collapse() {
         mapViewContainer.subviews.first?.removeFromSuperview()
         mapViewBottomViewContraint.isActive = false
@@ -90,6 +91,7 @@ class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate, MKMapViewDeleg
             timeLabel.text = startTime + " - " + (viewModel.endTime ?? "")
         }
         
+        // Add the path to the mapview
         if let mapView = mapView, let tripPath = viewModel.tripPath {
             mapView.removeOverlays(mapView.overlays)
             mapView.add(tripPath)
@@ -98,6 +100,7 @@ class RideLogCell: UITableViewCell, RideLogCellViewModelDelegate, MKMapViewDeleg
     }
     
     // MARK: - MKMapViewDelegate
+    
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let polylineRenderer = MKPolylineRenderer(overlay: overlay)
         polylineRenderer.strokeColor = UIColor.blue
